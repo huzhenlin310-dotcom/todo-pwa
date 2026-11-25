@@ -24,7 +24,7 @@
     return { id: newId('task'), title, goalId, done: false };
   }
 
-  function makeGoal(title, priority, deadline) {
+  function makeGoal(title, priority, deadline = '') {
     return { id: newId('goal'), title, priority, deadline, note: '', steps: [] };
   }
 
@@ -87,11 +87,12 @@
     }
 
     const goals = saved.goals.map(goal => {
+      const deadline = goal?.deadline ?? '';
       if (!goal || typeof goal.title !== 'string' || typeof goal.note !== 'string' ||
-          !priorities.includes(goal.priority) || typeof goal.deadline !== 'string' ||
-          !/^\d{4,}-\d{2}-\d{2}$/.test(goal.deadline) || !registerId(goal.id, 'goal') ||
+          !priorities.includes(goal.priority) || typeof deadline !== 'string' ||
+          (deadline !== '' && !/^\d{4,}-\d{2}-\d{2}$/.test(deadline)) || !registerId(goal.id, 'goal') ||
           !Array.isArray(goal.steps)) throw new Error('Invalid goal');
-      const { id, title, priority, deadline, note } = goal;
+      const { id, title, priority, note } = goal;
       const clean = { id, title, priority, deadline, note, steps: goal.steps.map(task => readTask(task, id)) };
       if (goal.archived === true) clean.archived = true;
       return clean;

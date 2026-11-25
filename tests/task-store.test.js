@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const { test } = require('node:test');
-const { storageKey, makeTask, exampleSnapshot, snapshotOf, parseSnapshot, openSnapshot,
+const { storageKey, makeGoal, makeTask, exampleSnapshot, snapshotOf, parseSnapshot, openSnapshot,
   createStore, StorageChangedError } = require('../task-store.js');
 
 const oldSnapshot = {
@@ -39,6 +39,29 @@ test('reads the original localStorage format and keeps one object for a linked t
   assert.equal(state.goals[0].steps[0].done, true);
   assert.equal(snapshot.goals[0].steps[0].done, false);
   assert.deepEqual(parseSnapshot(JSON.stringify(snapshotOf(state))), snapshotOf(state));
+});
+
+test('saves, reloads, and imports goals with optional deadlines', async () => {
+  const { openTab } = memory();
+  const tab = openTab();
+  const before = tab.read();
+  const state = openSnapshot(before);
+  state.goals.push(makeGoal('无期限目标', 'P2'));
+  await tab.commit(before, snapshotOf(state));
+
+  const saved = openTab().read();
+  assert.deepEqual(saved.goals.map(goal => goal.deadline), ['2026-12-20', '']);
+  state.goals[0].deadline = '';
+  await tab.commit(saved, snapshotOf(state));
+
+  const backup = openTab().read();
+  assert.deepEqual(backup.goals.map(goal => goal.deadline), ['', '']);
+  delete backup.goals[1].deadline;
+  await tab.replace(parseSnapshot(JSON.stringify(backup)));
+  assert.deepEqual(openTab().read().goals.map(goal => goal.deadline), ['', '']);
+
+  backup.goals[0].deadline = 'invalid';
+  assert.throws(() => parseSnapshot(JSON.stringify(backup)), /Invalid goal/);
 });
 
 test('two stale tabs can add tasks without overwriting each other', async () => {

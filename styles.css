@@ -176,7 +176,7 @@ button[type="submit"]:not(.secondary, .confirm-delete) { background: var(--blue-
 button.secondary { background: var(--hover); }
 :is(button, summary, .task-check, .tag-choice) { touch-action: manipulation; }
 :is(button, summary, select, .view-nav a, .task, .tag-choice) { transition: background-color var(--feedback-time) ease-out; }
-:is(button:not(:disabled), .view-nav a, summary):active { background: var(--pressed); }
+:is(button:not(:disabled), .view-nav a, summary):active { background-color: var(--pressed); }
 button[type="submit"]:not(.secondary, .confirm-delete):active { background: var(--blue-pressed); }
 :focus-visible { outline: 2px solid var(--blue-ink); outline-offset: 2px; }
 
@@ -185,7 +185,7 @@ summary::-webkit-details-marker { display: none; }
 .goal + .goal { border-block-start: 1px solid var(--line); }
 .goal > summary {
   display: grid;
-  grid-template-columns: 12px minmax(0, 1fr) auto auto;
+  grid-template-columns: 12px minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px;
   min-height: max(42px, var(--control-height));
@@ -193,6 +193,7 @@ summary::-webkit-details-marker { display: none; }
   border-radius: var(--radius);
 }
 
+.goal > summary:has(.countdown) { grid-template-columns: 12px minmax(0, 1fr) auto auto; }
 .goal > summary .arrow { grid-column: 1; grid-row: 1; }
 .goal-title { overflow-wrap: anywhere; }
 
@@ -202,8 +203,9 @@ summary::-webkit-details-marker { display: none; }
   background: var(--white);
 }
 #goals .goal + .goal { margin-top: 6px; }
-#goals .goal > summary { grid-template-columns: minmax(0, 1fr) auto auto 12px; gap: 10px; padding-inline: 12px; }
-#goals .goal > summary .arrow { grid-column: 4; }
+#goals .goal > summary { grid-template-columns: minmax(0, 1fr) auto 12px; gap: 10px; padding-inline: 12px; }
+#goals .goal > summary:has(.countdown) { grid-template-columns: minmax(0, 1fr) auto auto 12px; }
+#goals .goal > summary .arrow { grid-column: -2; }
 #goals .goal-title { font-weight: 600; }
 .badge {
   padding: 1px 7px;
@@ -220,7 +222,7 @@ summary::-webkit-details-marker { display: none; }
 .arrow { flex: none; width: 12px; color: var(--muted); font-size: .8125rem; line-height: 1; text-align: center; }
 .arrow::before { content: "▸"; }
 details[open] > summary .arrow::before { content: "▾"; }
-.goal[open] > summary { background: var(--hover); }
+.goal[open] > summary { background-color: var(--hover); }
 .goal-body {
   margin: 4px 0 12px 13px;
   padding: 4px 0 4px 12px;
@@ -267,7 +269,8 @@ details[open] > summary .arrow::before { content: "▾"; }
 .goal-form label { display: grid; gap: 4px; color: var(--muted); font-size: .875rem; }
 .goal-form label.wide { grid-column: 1 / -1; }
 .goal-form input, .goal-form select { color: var(--ink); }
-.goal-form button { grid-column: 1 / -1; justify-self: start; }
+.goal-form > button { grid-column: 1 / -1; justify-self: start; }
+.goal-deadline button { padding-inline: 0; }
 .add-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
 .add-row button { padding-inline: 12px; }
 .checklist .add-row { margin-bottom: 16px; }
@@ -291,6 +294,13 @@ ul { margin: 0; padding: 0; list-style: none; }
   gap: 0 4px;
   padding-inline: 8px 4px;
   border-radius: var(--radius);
+}
+
+:is(.goal > summary[data-priority="P0"], .task[data-importance="yes"]) { --entry-tint: #f8dcd8; }
+.goal > summary[data-priority="P1"] { --entry-tint: #fae6cc; }
+:is(.goal > summary[data-priority="P2"], .task[data-importance="no"]) { --entry-tint: #deedf8; }
+:is(.goal > summary[data-priority], .task[data-importance="yes"], .task[data-importance="no"]) {
+  background-image: linear-gradient(to right, var(--entry-tint), transparent 80%);
 }
 
 .task-check {
@@ -485,7 +495,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   position: relative;
   margin-bottom: 4px;
   border-radius: var(--radius);
-  background: var(--hover);
+  background-color: var(--hover);
   touch-action: pan-y pinch-zoom;
 }
 
@@ -611,7 +621,7 @@ button.confirm-delete:active { background: var(--red-ink); color: var(--white); 
 
 @media (hover: hover) {
   :is(summary, select, .view-nav a, .task, .tag-choice):hover,
-  button:not(:disabled, :active):hover { background: var(--hover); }
+  button:not(:disabled, :active):hover { background-color: var(--hover); }
   button.secondary:not(:active):hover { background: var(--pressed); }
   #add-task button:not(:active):hover { background: #12566d; }
   .board-plan:not(:disabled):hover, .task-view-switch button[aria-pressed="true"]:hover { background: var(--blue-pressed); }

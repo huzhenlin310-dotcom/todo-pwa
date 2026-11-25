@@ -58,7 +58,7 @@
       swipeHint: '左滑归档，右滑加入今天。也可点「⋯」。',
       moreTaskActions: '「{value}」的更多操作', closeTags: '收起',
       add: '添加', taskPrompt: '要做什么？',
-      goalTitle: '目标名称', deadline: '截止日期', priority: '优先级', priorityValue: '优先级 {value}',
+      goalTitle: '目标名称', deadline: '截止日期（选填）', clearDeadline: '清除日期', priority: '优先级', priorityValue: '优先级 {value}',
       addGoal: '添加目标', saveGoal: '保存目标', editGoal: '编辑目标信息',
       goalNote: '目标笔记', notePrompt: '记录具体情况、思路或做法',
       subtasks: '子待办', stepPrompt: '下一步怎么做？', addStep: '添加子待办',
@@ -115,7 +115,7 @@
       swipeHint: '左へスワイプでアーカイブ、右へスワイプで今日に追加できます。「⋯」からも操作できます。',
       moreTaskActions: '「{value}」のその他の操作', closeTags: '閉じる',
       add: '追加', taskPrompt: '何をしますか？',
-      goalTitle: '目標名', deadline: '期限', priority: '優先度', priorityValue: '優先度 {value}',
+      goalTitle: '目標名', deadline: '期限（任意）', clearDeadline: '期限をクリア', priority: '優先度', priorityValue: '優先度 {value}',
       addGoal: '目標を追加', saveGoal: '目標を保存', editGoal: '目標を編集',
       goalNote: '目標メモ', notePrompt: '状況や考え、進め方をメモする',
       subtasks: 'サブタスク', stepPrompt: '次に何をしますか？', addStep: 'サブタスクを追加',
@@ -174,7 +174,7 @@
       swipeHint: 'Swipe left to archive or right to add to today. You can also use “⋯”.',
       moreTaskActions: 'More actions for “{value}”', closeTags: 'Close',
       add: 'Add', taskPrompt: 'What do you need to do?',
-      goalTitle: 'Goal name', deadline: 'Due date', priority: 'Priority', priorityValue: 'Priority {value}',
+      goalTitle: 'Goal name', deadline: 'Due date (optional)', clearDeadline: 'Clear due date', priority: 'Priority', priorityValue: 'Priority {value}',
       addGoal: 'Add goal', saveGoal: 'Save goal', editGoal: 'Edit goal',
       goalNote: 'Goal notes', notePrompt: 'Capture context, ideas, or how to proceed',
       subtasks: 'Subtasks', stepPrompt: 'What’s the next step?', addStep: 'Add subtask',
@@ -441,7 +441,10 @@
       `<option ${priority === goal.priority ? 'selected' : ''}>${priority}</option>`).join('');
     return `
       <label class="wide"><span data-i18n="goalTitle"></span><input name="title" value="${escapeText(goal.title)}" maxlength="80" required></label>
-      <label><span data-i18n="deadline"></span><input type="date" name="deadline" value="${escapeText(goal.deadline)}" required></label>
+      <div class="goal-deadline">
+        <label><span data-i18n="deadline"></span><input type="date" name="deadline" value="${escapeText(goal.deadline)}"></label>
+        ${goal.deadline ? '<button type="button" class="quiet-action" data-clear-deadline data-i18n="clearDeadline"></button>' : ''}
+      </div>
       <label><span data-i18n="priority"></span><select name="priority">${options}</select></label>
       <button type="submit" data-i18n="${goal.id ? 'saveGoal' : 'addGoal'}"></button>`;
   }
@@ -537,7 +540,7 @@
         ${taskDetails(task, origin, !inGoal, dateLabel, view === 'board')}
       </label>
       ${action}`;
-    return `<li class="task ${view}-task" data-row-task="${task.id}">${view === 'past' ? `
+    return `<li class="task ${view}-task" data-row-task="${task.id}" data-importance="${task.importance ?? ''}">${view === 'past' ? `
       <div class="swipe-preview" aria-hidden="true">
         <span data-swipe-action="right" data-i18n="planForToday"></span>
         <span data-swipe-action="left" data-i18n="archive"></span>
@@ -553,10 +556,10 @@
   }
 
   function goalSummary(goal) {
-    return `<summary>
+    return `<summary data-priority="${goal.priority}">
       <span class="goal-title">${escapeText(goal.title)}</span>
-      <span class="badge" data-priority="${goal.priority}" data-i18n-label="priorityValue" data-i18n-value="${goal.priority}">${goal.priority}</span>
-      <time class="countdown" datetime="${goal.deadline}"></time>
+      <span class="badge" data-i18n-label="priorityValue" data-i18n-value="${goal.priority}">${goal.priority}</span>
+      ${goal.deadline ? `<time class="countdown" datetime="${goal.deadline}"></time>` : ''}
       <span class="arrow" aria-hidden="true"></span>
     </summary>`;
   }
@@ -713,6 +716,11 @@
     button.disabled = task.done && !inChecklist;
   }
 
+  function syncGoalTaskImportance(task) {
+    const row = goalsRoot.querySelector(`[data-row-task="${task.id}"]`);
+    if (row) row.dataset.importance = task.importance ?? '';
+  }
+
   function removeFromChecklist(task, index) {
     const previous = checklistTasks[index - 1];
     const following = checklistTasks[index + 1];
@@ -754,7 +762,7 @@
 
   function archivedTaskRow(task, inGoal) {
     const origin = inGoal ? null : goals.find(goal => goal.id === task.goalId);
-    return `<li class="task archive-task">
+    return `<li class="task archive-task" data-importance="${task.importance ?? ''}">
       <label class="task-check"><input type="checkbox" ${task.done ? 'checked' : ''} disabled>
         ${taskDetails(task, origin, true)}
       </label>
@@ -897,6 +905,7 @@
       delete item.planDate;
       for (const field of tagFields) delete item[field];
       syncPlanButton(item);
+      syncGoalTaskImportance(item);
     }
     saveState();
     renderChecklist();
@@ -1118,11 +1127,13 @@
     const previousGroup = taskQuadrant(task);
     if (choice.value) task[field] = choice.value;
     else delete task[field];
+    if (field === 'importance') syncGoalTaskImportance(task);
     saveState();
     if (previousGroup !== taskQuadrant(task)) {
       renderChecklist();
       document.getElementById(`tags-${id}`).querySelector(`[data-tag-field="${field}"][value="${choice.value}"]`).focus();
     } else {
+      row.dataset.importance = task.importance ?? '';
       const badges = row.querySelector('.task-tags');
       badges.innerHTML = tagBadges(task);
       localize(badges);
@@ -1218,8 +1229,14 @@
   });
 
   goalsRoot.addEventListener('click', event => {
-    const button = event.target.closest('button[data-plan]');
+    const button = event.target.closest('button[data-plan], button[data-clear-deadline]');
     if (!button) return;
+    if (button.hasAttribute('data-clear-deadline')) {
+      const deadline = button.form.elements.deadline;
+      deadline.value = '';
+      deadline.focus();
+      return;
+    }
     const goal = goals.find(item => item.id === button.closest('.goal').dataset.goal);
     const task = goal.steps.find(step => step.id === button.dataset.plan);
     const index = checklistTasks.indexOf(task);
