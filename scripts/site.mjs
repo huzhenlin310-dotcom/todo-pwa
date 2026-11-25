@@ -5,10 +5,12 @@ import { createServer } from 'node:http';
 const root = new URL('../', import.meta.url);
 const output = new URL('_site/', root);
 const worker = 'service-worker.js';
+const versionFile = 'version.json';
 const files = new Map([
   ['index.html', 'text/html; charset=utf-8'],
   ['styles.css', 'text/css; charset=utf-8'],
   ['app.js', 'text/javascript; charset=utf-8'],
+  ['app-update.js', 'text/javascript; charset=utf-8'],
   ['task-store.js', 'text/javascript; charset=utf-8'],
   ['install-prompt.js', 'text/javascript; charset=utf-8'],
   [worker, 'text/javascript; charset=utf-8'],
@@ -19,14 +21,26 @@ const files = new Map([
 ]);
 
 async function siteContents() {
-  const assets = new Map(await Promise.all([...files.keys()].map(async file => [file, await readFile(new URL(file, root))])));
+  const sourceFiles = [...files.keys(), 'releases.json'];
+  const assets = new Map(await Promise.all(sourceFiles.map(async file => [file, await readFile(new URL(file, root))])));
+  const history = JSON.parse(assets.get('releases.json'));
+  const { version } = JSON.parse(await readFile(new URL('package.json', root), 'utf8'));
+  if (history[0]?.version !== version) throw new Error('The latest release must match package.json');
+
   const digest = createHash('sha256');
   for (const [file, contents] of assets) digest.update(file).update('\0').update(contents);
-  const version = digest.digest('hex').slice(0, 20);
+  const build = digest.digest('hex').slice(0, 20);
+  assets.delete('releases.json');
   const source = assets.get(worker).toString('utf8');
   const marker = "const CACHE_VERSION = 'source';";
   if (!source.includes(marker)) throw new Error('Service worker is missing its release version marker');
-  assets.set(worker, source.replace(marker, `const CACHE_VERSION = '${version}';`));
+  assets.set(worker, source.replace(marker, `const CACHE_VERSION = '${build}';`));
+  const entry = assets.get('index.html').toString('utf8');
+  const release = JSON.stringify({ build, history }).replaceAll('<', '\\u003c');
+  assets.set('index.html', entry.replace('name="app-build" content="source"', `name="app-build" content="${build}"`)
+    .replace('type="application/json">{}</script>', () => `type="application/json">${release}</script>`)
+    .replaceAll('?v=source', `?v=${build}`));
+  assets.set(versionFile, JSON.stringify({ build, version }));
   return assets;
 }
 
@@ -45,13 +59,15 @@ function serve() {
     }
     const path = request.url.split('?')[0];
     const file = path === '/' ? 'index.html' : path.slice(1);
-    if (!files.has(file)) {
+    const contentType = file === versionFile ? 'application/json; charset=utf-8' : files.get(file);
+    if (!contentType) {
       response.writeHead(404).end('Not found');
       return;
     }
     try {
-      const contents = file === worker ? (await siteContents()).get(file) : await readFile(new URL(file, root));
-      response.writeHead(200, { 'Content-Type': files.get(file), 'Cache-Control': 'no-cache' });
+      const contents = [worker, 'index.html', versionFile].includes(file)
+        ? (await siteContents()).get(file) : await readFile(new URL(file, root));
+      response.writeHead(200, { 'Content-Type': contentType, 'Cache-Control': file === versionFile ? 'no-store' : 'no-cache' });
       response.end(request.method === 'HEAD' ? undefined : contents);
     } catch (error) {
       console.error(error);

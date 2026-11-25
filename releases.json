@@ -1,0 +1,18 @@
+[
+  {
+    "version": "1.1.0",
+    "notes": {
+      "zh-CN": "新增设置页、版本历史和检查更新。确认更新后重新加载应用，保留本地记录。",
+      "ja": "設定画面、更新履歴、更新確認を追加しました。更新後もローカルデータは保持されます。",
+      "en": "Added Settings, release history, and update checks. Updating keeps your local data."
+    }
+  },
+  {
+    "version": "1.0.0",
+    "notes": {
+      "zh-CN": "支持长期目标、四象限待办、今日计划、归档和数据备份。",
+      "ja": "長期目標、4象限タスク、今日の予定、アーカイブ、バックアップに対応しました。",
+      "en": "Long-term goals, four-quadrant tasks, daily planning, archives, and backups."
+    }
+  }
+]

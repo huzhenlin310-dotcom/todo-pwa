@@ -4,11 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#f7f6f3">
+<meta name="app-build" content="source">
 <title>长期目标与日常待办</title>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icons/icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-<link rel="stylesheet" href="./styles.css">
+<link rel="stylesheet" href="./styles.css?v=source">
 </head>
 <body>
 <main>
@@ -21,6 +22,7 @@
     <nav class="view-nav" data-i18n-label="navigation">
       <a href="#home" id="home-link" data-i18n="home" aria-current="page">首页</a>
       <a href="#archive" id="archive-link" data-i18n="archiveHeading">已归档</a>
+      <a href="#settings" id="settings-link" data-i18n="settingsHeading">设置</a>
     </nav>
     <div class="language-picker">
       <label class="visually-hidden" for="language" data-i18n="language">语言</label>
@@ -97,6 +99,23 @@
       <p class="archive-empty" id="no-archived-tasks" data-i18n="emptyArchiveTasks"></p>
     </section>
   </div>
+  <div id="settings-view" hidden>
+    <h1 class="archive-heading" id="settings-heading" tabindex="-1" data-i18n="settingsHeading">设置</h1>
+    <section class="settings-section" aria-labelledby="history-heading">
+      <h2 id="history-heading" data-i18n="historyHeading">版本更新历史</h2>
+      <p class="settings-detail" id="current-version"></p>
+      <ol class="release-list" id="release-history"></ol>
+    </section>
+    <section class="settings-section" aria-labelledby="update-heading">
+      <h2 id="update-heading" data-i18n="updatesHeading">检查更新</h2>
+      <p class="settings-detail" data-i18n="updateSchedule">应用打开时，每 24 小时自动检查一次。</p>
+      <div class="task-actions">
+        <button type="button" class="secondary" id="check-updates" data-i18n="checkUpdates">检查更新</button>
+        <button type="button" class="primary-action" id="show-update" data-i18n="updateNow" hidden>立即更新</button>
+      </div>
+      <p class="settings-detail" id="update-status" role="status"></p>
+    </section>
+  </div>
   <footer class="data-settings">
     <details>
       <summary><span class="arrow" aria-hidden="true"></span><span data-i18n="dataSettings">数据备份</span></summary>
@@ -110,7 +129,7 @@
     </details>
     <button type="button" class="install-entry" id="show-install-tip" data-i18n="installEntry" hidden>安装应用</button>
   </footer>
-  <dialog class="delete-dialog" id="delete-dialog" aria-labelledby="delete-heading" aria-describedby="delete-description">
+  <dialog class="app-dialog" id="delete-dialog" aria-labelledby="delete-heading" aria-describedby="delete-description">
     <form method="dialog">
       <h2 id="delete-heading" data-i18n="deleteHeading"></h2>
       <p id="delete-description"></p>
@@ -120,7 +139,7 @@
       </div>
     </form>
   </dialog>
-  <dialog class="delete-dialog" id="import-dialog" aria-labelledby="import-heading" aria-describedby="import-description">
+  <dialog class="app-dialog" id="import-dialog" aria-labelledby="import-heading" aria-describedby="import-description">
     <form method="dialog">
       <h2 id="import-heading" data-i18n="importHeading">导入备份？</h2>
       <p id="import-description" data-i18n="importDescription">导入会替换当前浏览器里的目标、待办和应用设置。</p>
@@ -130,14 +149,27 @@
       </div>
     </form>
   </dialog>
+  <dialog class="app-dialog" id="update-dialog" aria-labelledby="available-update-heading" aria-describedby="update-description update-progress">
+    <form method="dialog">
+      <h2 id="available-update-heading"></h2>
+      <p id="update-description" data-i18n="updateDescription">更新会重新加载应用，已保存的目标、待办和设置会保留。</p>
+      <p id="update-progress" role="status"></p>
+      <div class="task-actions">
+        <button type="submit" class="secondary" id="update-later" data-i18n="updateLater" autofocus>稍后</button>
+        <button type="button" class="primary-action" id="apply-update" data-i18n="updateNow">立即更新</button>
+      </div>
+    </form>
+  </dialog>
   <div class="undo-notice" id="undo-notice" hidden>
     <span id="undo-message"></span>
     <button type="button" class="secondary" id="undo-action" data-i18n="undo"></button>
   </div>
   <div id="status" class="visually-hidden" role="status"></div>
 </main>
-<script defer src="./task-store.js"></script>
-<script defer src="./install-prompt.js"></script>
-<script defer src="./app.js"></script>
+<script id="app-release" type="application/json">{}</script>
+<script defer src="./task-store.js?v=source"></script>
+<script defer src="./install-prompt.js?v=source"></script>
+<script defer src="./app-update.js?v=source"></script>
+<script defer src="./app.js?v=source"></script>
 </body>
 </html>

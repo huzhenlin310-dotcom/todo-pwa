@@ -2,15 +2,34 @@ const CACHE_VERSION = 'source';
 const scope = new URL(self.registration.scope);
 const prefix = `long-term-goals-todo:${scope.href}:`;
 const cacheName = `${prefix}${CACHE_VERSION}`;
-const shell = scope.href;
+const versioned = path => new URL(`${path}?v=${CACHE_VERSION}`, scope).href;
+const shell = versioned('./');
 const index = new URL('index.html', scope).pathname;
-const assets = new Set(['./', 'styles.css', 'task-store.js', 'install-prompt.js', 'app.js', 'manifest.webmanifest',
-  'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png']
-  .map(path => new URL(path, scope).href));
+const assets = new Set([shell, ...['styles.css', 'task-store.js', 'install-prompt.js', 'app-update.js', 'app.js'].map(versioned),
+  ...['manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png']
+    .map(path => new URL(path, scope).href)]);
 
 self.addEventListener('install', event => {
-  const requests = [...assets].map(url => new Request(url, { cache: 'reload' }));
-  event.waitUntil(caches.open(cacheName).then(cache => cache.addAll(requests)));
+  event.waitUntil((async () => {
+    const cache = await caches.open(cacheName);
+    try {
+      await cache.addAll([...assets].map(url => new Request(url, { cache: 'reload' })));
+      const page = await cache.match(shell);
+      if (!(await page.text()).includes(`<meta name="app-build" content="${CACHE_VERSION}">`)) {
+        throw new Error('The HTML build does not match the service worker');
+      }
+    } catch (error) {
+      await caches.delete(cacheName);
+      throw error;
+    }
+  })());
+});
+
+self.addEventListener('message', event => {
+  if (event.data?.type !== 'activate-update') return;
+  const matches = event.data.build === CACHE_VERSION;
+  event.ports[0]?.postMessage(matches);
+  if (matches) event.waitUntil(self.skipWaiting());
 });
 
 self.addEventListener('activate', event => {
@@ -31,7 +50,7 @@ self.addEventListener('fetch', event => {
   const key = appPage ? shell : url.href;
   if (!assets.has(key)) return;
 
-  // Keep a page and its assets on the same release. A new worker waits for old tabs to close.
+  // Keep the application shell and its assets on the same release.
   event.respondWith((async () => {
     const cache = await caches.open(cacheName);
     const response = await cache.match(key);

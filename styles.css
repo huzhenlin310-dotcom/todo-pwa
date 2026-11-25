@@ -534,6 +534,16 @@ ul { margin: 0; padding: 0; list-style: none; }
 .archive-task input { opacity: .7; }
 .archive-goal-actions { margin-top: 8px; }
 
+.settings-section + .settings-section { margin-top: 28px; }
+.settings-section { padding-block-start: 16px; border-block-start: 1px solid var(--section-line); }
+.settings-section h2 { font-size: 1.25rem; }
+.settings-detail, .release-list p { margin: 6px 0 12px; color: var(--muted); font-size: .875rem; }
+.settings-detail:empty, .app-dialog p:empty { display: none; }
+.settings-section .task-actions { justify-content: flex-start; gap: 8px; }
+.release-list { list-style: none; margin: 12px 0 0; padding: 0; }
+.release-list li { padding-block: 10px; border-block-start: 1px solid var(--line); }
+.release-list p { margin-bottom: 0; }
+
 .undo-notice {
   position: fixed;
   z-index: 4;
@@ -556,7 +566,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .undo-notice span { min-width: 0; overflow-wrap: anywhere; }
 .undo-notice button { color: var(--blue-ink); }
 button.danger-action { color: var(--red-ink); }
-.delete-dialog {
+.app-dialog {
   width: min(420px, calc(100% - 32px));
   padding: 20px;
   border: 1px solid var(--line);
@@ -566,9 +576,11 @@ button.danger-action { color: var(--red-ink); }
   color: var(--ink);
 }
 
-.delete-dialog h2 { font-size: 1.25rem; }
-.delete-dialog::backdrop { background: rgb(55 53 47 / .3); }
-.delete-dialog p { margin: 8px 0 16px; font-size: .875rem; overflow-wrap: anywhere; }
+.app-dialog h2 { font-size: 1.25rem; }
+.app-dialog::backdrop { background: rgb(55 53 47 / .3); }
+.app-dialog p { margin: 8px 0 16px; font-size: .875rem; overflow-wrap: anywhere; }
+button.primary-action { background: var(--blue-tint); color: var(--blue-ink); font-weight: 600; }
+button.primary-action:not(:disabled):is(:hover, :active) { background: var(--blue-pressed); }
 button.confirm-delete { background: var(--red-tint); color: var(--red-ink); font-weight: 600; }
 button.confirm-delete:active { background: var(--red-ink); color: var(--white); }
 

@@ -24,6 +24,8 @@
   const retryStorage = document.querySelector('#retry-storage');
   const homeView = document.querySelector('#home-view');
   const archiveView = document.querySelector('#archive-view');
+  const settingsView = document.querySelector('#settings-view');
+  const release = JSON.parse(document.querySelector('#app-release').textContent);
   const archiveGoalsRoot = document.querySelector('#archived-goals');
   const archiveTasksRoot = document.querySelector('#archived-tasks');
   const deleteDialog = document.querySelector('#delete-dialog');
@@ -68,6 +70,15 @@
       requireTitle: '请输入名称', taskAdded: '已添加「{value}」', stepAdded: '已添加子待办「{value}」',
       linkedTaskAdded: '已将「{value}」加入日常待办', linkedTaskRemoved: '已将「{value}」移出日常待办',
       navigation: '页面导航', home: '首页', archiveHeading: '已归档', archive: '归档', restore: '取消归档',
+      settingsHeading: '设置', historyHeading: '版本更新历史', currentVersion: '当前版本 {value}',
+      releaseHistoryUnavailable: '版本历史随发布版本提供。',
+      updatesHeading: '检查更新', checkUpdates: '检查更新', updateSchedule: '应用打开时，每 24 小时自动检查一次。',
+      checkingUpdates: '正在检查更新…', upToDate: '已是最新版本（{value}）。',
+      updateAvailable: '发现新版本 {value}', updateLater: '稍后', updateNow: '立即更新',
+      updateDescription: '更新会重新加载应用，已保存的目标、待办和设置会保留。',
+      updateCheckFailed: '暂时无法检查更新，请稍后重试。', updatesUnavailable: '请打开线上或本地预览版本以检查更新。',
+      updating: '正在准备新版…', updateFailed: '更新未完成。请稍后重试，或返回设置重新检查更新。',
+      updateDraft: '请先保存或清空正在编辑的目标或待办，再更新。', updateSaveFailed: '本地改动尚未保存。请先处理保存问题，再更新。',
       archiveItem: '归档「{value}」', restoreItem: '取消归档「{value}」', deleteItem: '永久删除「{value}」',
       emptyArchiveGoals: '暂无已归档的长期目标。',
       emptyArchiveTasks: '暂无已归档的日常待办。', archived: '已归档「{value}」', restored: '已取消归档「{value}」',
@@ -117,6 +128,15 @@
       stepAdded: 'サブタスク「{value}」を追加しました', linkedTaskAdded: '「{value}」をやることリストに追加しました',
       linkedTaskRemoved: '「{value}」をやることリストから外しました',
       navigation: 'ページナビゲーション', home: 'ホーム', archiveHeading: 'アーカイブ', archive: 'アーカイブ', restore: '元に戻す',
+      settingsHeading: '設定', historyHeading: '更新履歴', currentVersion: '現在のバージョン {value}',
+      releaseHistoryUnavailable: '更新履歴はリリース版で確認できます。',
+      updatesHeading: '更新の確認', checkUpdates: '更新を確認', updateSchedule: 'アプリを開いている間は、24時間ごとに更新を自動確認します。',
+      checkingUpdates: '更新を確認しています…', upToDate: '最新バージョン（{value}）を使用しています。',
+      updateAvailable: '新しいバージョン {value} があります', updateLater: '後で', updateNow: '今すぐ更新',
+      updateDescription: '更新するとアプリが再読み込みされます。保存済みの目標、タスク、設定は保持されます。',
+      updateCheckFailed: '更新を確認できませんでした。後でもう一度お試しください。', updatesUnavailable: '公開版またはローカルプレビューで更新を確認できます。',
+      updating: '更新を準備しています…', updateFailed: '更新できませんでした。後で再試行するか、設定から更新を確認してください。',
+      updateDraft: '編集中の目標やタスクを保存または消去してから更新してください。', updateSaveFailed: '変更が保存されていません。保存の問題を解消してから更新してください。',
       archiveItem: '「{value}」をアーカイブ', restoreItem: '「{value}」を元に戻す', deleteItem: '「{value}」を完全に削除',
       emptyArchiveGoals: 'アーカイブされた長期目標はありません。',
       emptyArchiveTasks: 'アーカイブされたタスクはありません。', archived: '「{value}」をアーカイブしました', restored: '「{value}」を元に戻しました',
@@ -166,6 +186,15 @@
       requireTitle: 'Enter a name', taskAdded: 'Added “{value}”', stepAdded: 'Added subtask “{value}”',
       linkedTaskAdded: 'Added “{value}” to tasks', linkedTaskRemoved: 'Removed “{value}” from tasks',
       navigation: 'Page navigation', home: 'Home', archiveHeading: 'Archived', archive: 'Archive', restore: 'Restore',
+      settingsHeading: 'Settings', historyHeading: 'Release history', currentVersion: 'Current version {value}',
+      releaseHistoryUnavailable: 'Release history is available in published builds.',
+      updatesHeading: 'Updates', checkUpdates: 'Check for updates', updateSchedule: 'Checks automatically every 24 hours while the app is open.',
+      checkingUpdates: 'Checking for updates…', upToDate: 'You’re on the latest version ({value}).',
+      updateAvailable: 'Version {value} is available', updateLater: 'Later', updateNow: 'Update now',
+      updateDescription: 'The app will reload. Your saved goals, tasks, and settings will be kept.',
+      updateCheckFailed: 'Couldn’t check for updates. Try again later.', updatesUnavailable: 'Open the published app or local preview to check for updates.',
+      updating: 'Preparing the update…', updateFailed: 'The update couldn’t finish. Try again later or check for updates in Settings.',
+      updateDraft: 'Save or clear your goal or task drafts before updating.', updateSaveFailed: 'Your changes are unsaved. Resolve the save issue before updating.',
       archiveItem: 'Archive “{value}”', restoreItem: 'Restore “{value}”', deleteItem: 'Permanently delete “{value}”',
       emptyArchiveGoals: 'No archived goals.',
       emptyArchiveTasks: 'No archived tasks.', archived: 'Archived “{value}”', restored: 'Restored “{value}”',
@@ -755,19 +784,31 @@
   }
 
   function renderView(focusHeading = false) {
-    const archived = location.hash === '#archive';
-    homeView.hidden = archived;
-    archiveView.hidden = !archived;
-    const homeLink = document.querySelector('#home-link');
-    const archiveLink = document.querySelector('#archive-link');
-    (archived ? homeLink : archiveLink).removeAttribute('aria-current');
-    (archived ? archiveLink : homeLink).setAttribute('aria-current', 'page');
-    document.title = translate(archived ? 'archiveHeading' : 'pageTitle');
-    if (archived) renderArchive();
+    const page = currentPage();
+    const views = { home: homeView, archive: archiveView, settings: settingsView };
+    for (const [name, view] of Object.entries(views)) {
+      const active = name === page;
+      view.hidden = !active;
+      const link = document.querySelector(`#${name}-link`);
+      if (active) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
+    }
+    renderPageTitle();
+    if (page === 'archive') renderArchive();
     if (focusHeading) {
       window.scrollTo(0, 0);
-      document.querySelector(archived ? '#archive-heading' : '#goals-heading').focus({ preventScroll: true });
+      views[page].querySelector('h1').focus({ preventScroll: true });
     }
+  }
+
+  function currentPage() {
+    const page = location.hash.slice(1);
+    return ['archive', 'settings'].includes(page) ? page : 'home';
+  }
+
+  function renderPageTitle() {
+    const titles = { home: 'pageTitle', archive: 'archiveHeading', settings: 'settingsHeading' };
+    document.title = translate(titles[currentPage()]);
   }
 
   function clearUndo(item) {
@@ -1235,8 +1276,13 @@
   function renderLanguage() {
     document.documentElement.lang = locale;
     languagePicker.value = locale;
-    document.title = translate(archiveView.hidden ? 'pageTitle' : 'archiveHeading');
+    renderPageTitle();
     localize();
+    const history = release.history ?? [];
+    document.querySelector('#current-version').textContent = history.length
+      ? translate('currentVersion', history[0].version) : translate('releaseHistoryUnavailable');
+    document.querySelector('#release-history').innerHTML = history.map(({ version, notes }) =>
+      `<li><strong>${escapeText(version)}</strong><p>${escapeText(notes[locale])}</p></li>`).join('');
     document.querySelectorAll('input[name="title"]').forEach(input => {
       if (input.validity.customError) input.setCustomValidity(translate('requireTitle'));
     });
@@ -1296,9 +1342,19 @@
     renderView(true);
   });
 
-  if (webPage && window.isSecureContext && 'serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./service-worker.js').catch(error => {
-      console.warn('Offline setup failed', error);
-    });
+  async function prepareReload() {
+    const draftFields = document.querySelectorAll('#add-task input, .add-step input, .goal-form input, .goal-form select');
+    const hasDraft = [...draftFields].some(field => field.matches('select')
+      ? !field.selectedOptions[0]?.defaultSelected : field.value !== field.defaultValue || field.validity.badInput);
+    if (hasDraft) return 'updateDraft';
+    if (importing || ((needsInitialSave || pendingSnapshot !== baseline || saveInProgress) && !await flushSavings())) {
+      return 'updateSaveFailed';
+    }
   }
+
+  const serviceWorker = webPage && window.isSecureContext ? navigator.serviceWorker : undefined;
+  const registration = serviceWorker?.register('./service-worker.js', { updateViaCache: 'none' }).catch(error => {
+    console.warn('Offline setup failed', error);
+  });
+  globalThis.setupTodoUpdates({ build: release.build, registration, serviceWorker, translate, prepareReload });
 })();
