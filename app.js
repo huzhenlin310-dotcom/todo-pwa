@@ -81,7 +81,13 @@
       exportBackup: '导出备份', importBackup: '导入备份', importHeading: '导入备份？',
       importDescription: '导入会替换当前浏览器里的目标、待办和应用设置。', replaceData: '替换数据',
       badBackup: '无法读取此备份。请选择本应用导出的 JSON 文件。',
-      importFailed: '无法保存导入的数据。', importComplete: '已导入备份。'
+      importFailed: '无法保存导入的数据。', importComplete: '已导入备份。',
+      installMessage: '把待办装到设备上，像 App 一样打开。',
+      installNow: '一键安装', installHelp: '安装方法', installDismiss: '关闭安装提示', installEntry: '安装应用',
+      installGuideIOS: '在 Safari 打开此页，轻点「共享」→「添加到主屏幕」。如果有「作为网页 App 打开」，请开启，再轻点「添加」。',
+      installGuideMac: '在 Safari 中点「共享」→「添加到程序坞」，再点「添加」。',
+      installGuideAndroid: '在 Chrome 打开此页，点右上角菜单，选择安装应用或添加到主屏幕。',
+      installGuideDesktop: '在地址栏或浏览器菜单中查找安装选项。如果没有，可以用 Chrome 或 Edge 打开此页。'
     },
     ja: {
       pageTitle: '長期目標とやること', language: '言語',
@@ -125,7 +131,13 @@
       exportBackup: 'バックアップを出力', importBackup: 'バックアップを読み込む', importHeading: 'バックアップを読み込みますか？',
       importDescription: 'このブラウザーの目標、タスク、アプリの設定が置き換わります。', replaceData: 'データを置き換える',
       badBackup: 'バックアップを読み込めません。このアプリから出力した JSON ファイルを選んでください。',
-      importFailed: '読み込んだデータを保存できませんでした。', importComplete: 'バックアップを読み込みました。'
+      importFailed: '読み込んだデータを保存できませんでした。', importComplete: 'バックアップを読み込みました。',
+      installMessage: '端末にインストールして、アプリのように開けます。',
+      installNow: 'インストール', installHelp: 'インストール方法', installDismiss: 'インストール案内を閉じる', installEntry: 'アプリをインストール',
+      installGuideIOS: 'Safari でこのページを開き、「共有」から「ホーム画面に追加」を選びます。「Webアプリとして開く」が表示されたらオンにして、「追加」をタップします。',
+      installGuideMac: 'Safari の「共有」から「Dockに追加」を選び、「追加」をクリックします。',
+      installGuideAndroid: 'Chrome でこのページを開き、右上のメニューからアプリのインストールかホーム画面への追加を選びます。',
+      installGuideDesktop: 'アドレスバーかブラウザーのメニューでインストール項目を探してください。表示されない場合は Chrome または Edge で開けます。'
     },
     en: {
       pageTitle: 'Long-term Goals and Tasks', language: 'Language',
@@ -167,7 +179,13 @@
       exportBackup: 'Export backup', importBackup: 'Import backup', importHeading: 'Import backup?',
       importDescription: 'Importing replaces the goals, tasks, and app settings in this browser.', replaceData: 'Replace data',
       badBackup: 'Could not read this backup. Choose a JSON file exported by this app.',
-      importFailed: 'Could not save the imported data.', importComplete: 'Backup imported.'
+      importFailed: 'Could not save the imported data.', importComplete: 'Backup imported.',
+      installMessage: 'Install Tasks to open it like an app.',
+      installNow: 'Install app', installHelp: 'How to install', installDismiss: 'Dismiss install tip', installEntry: 'Install app',
+      installGuideIOS: 'Open this page in Safari, tap Share, then Add to Home Screen. Turn on Open as Web App if shown, then tap Add.',
+      installGuideMac: 'In Safari, click Share, choose Add to Dock, then click Add.',
+      installGuideAndroid: 'Open this page in Chrome. From the menu at the top right, choose to install the app or add it to your home screen.',
+      installGuideDesktop: 'Look for an install option in the address bar or browser menu. If it’s missing, open this page in Chrome or Edge.'
     }
   };
   let baseline;
@@ -1234,6 +1252,8 @@
       scheduleMidnightCheck();
     }, Math.max(1, midnight.getTime() - Date.now()));
   }
+
+  globalThis.setupTodoInstallPrompt(window, translate);
 
   addGoalForm.innerHTML = goalFields();
   const classifiedKeys = Object.keys(quadrants).filter(key => key !== 'unclassified');

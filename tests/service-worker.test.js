@@ -58,7 +58,7 @@ test('precaches the application at a GitHub Pages-style path and serves it offli
   offline = true;
   const page = await request(`${scope}index.html?launch=1`);
   assert.match(page.toString('utf8'), /<link rel="manifest" href="\.\/manifest\.webmanifest">/);
-  for (const file of ['styles.css', 'app.js', 'task-store.js', 'manifest.webmanifest']) {
+  for (const file of ['styles.css', 'app.js', 'task-store.js', 'install-prompt.js', 'manifest.webmanifest']) {
     assert((await request(scope + file, 'same-origin')).length > 0, `${file} should work offline`);
   }
   assert.equal((await request(scope)).toString('utf8'), page.toString('utf8'));

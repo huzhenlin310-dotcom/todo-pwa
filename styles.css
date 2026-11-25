@@ -107,6 +107,26 @@ h3 { font-size: 1.125rem; font-weight: 600; line-height: 1.4; }
 .storage-notice { flex: 1 1 200px; margin: 0; color: var(--red-ink); font-size: .875rem; overflow-wrap: anywhere; }
 .storage-notice[data-i18n="storageSaved"] { color: var(--ink); }
 
+.install-tip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  margin: -16px 0 24px;
+  padding: 6px 8px 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+  font-size: .875rem;
+}
+.install-tip > p { margin: 0; }
+.install-tip > #install-message { flex: 1 1 12rem; }
+.install-actions { display: flex; flex: 0 0 auto; margin-inline-start: auto; }
+.install-tip .install-action { background: var(--blue-tint); color: var(--blue-ink); font-weight: 600; }
+.install-dismiss { color: var(--muted); font-size: 1.125rem; }
+.install-tip .install-guide { flex-basis: 100%; padding-block: 4px; color: var(--muted); overflow-wrap: anywhere; }
+.install-entry { margin-block-start: 8px; color: var(--blue-ink); }
+
 .data-settings {
   margin-top: 32px;
   padding-top: 12px;
@@ -501,6 +521,7 @@ button.confirm-delete:active { background: var(--red-ink); color: var(--white); 
   button:not(:disabled, :active):hover { background: var(--hover); }
   :is(button.secondary, .task-view-switch button[aria-pressed="true"]):not(:active):hover { background: var(--pressed); }
   button[type="submit"]:not(.secondary, .confirm-delete, :active):hover { background: var(--blue-pressed); }
+  .install-tip .install-action:not(:disabled):hover { background: var(--blue-pressed); }
   button:is(.danger-action, .confirm-delete):not(:disabled, :active):hover { background: var(--red-tint); }
 }
 

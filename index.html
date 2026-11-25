@@ -31,6 +31,14 @@
       </select>
     </div>
   </header>
+  <aside id="install-tip" class="install-tip" aria-labelledby="install-message" hidden>
+    <p id="install-message" data-i18n="installMessage">把待办装到设备上，像 App 一样打开。</p>
+    <div class="install-actions">
+      <button type="button" class="install-action" id="install-action" data-i18n="installHelp">安装方法</button>
+      <button type="button" class="install-dismiss" id="dismiss-install-tip" data-i18n-label="installDismiss" aria-label="关闭安装提示">×</button>
+    </div>
+    <p class="install-guide" id="install-guide" hidden></p>
+  </aside>
   <div id="home-view">
     <section class="goals" aria-labelledby="goals-heading">
       <header class="section-head"><h1 id="goals-heading" tabindex="-1" data-i18n="goalsHeading">长期目标</h1></header>
@@ -98,6 +106,7 @@
       </div>
       <p id="backup-notice" class="backup-notice" role="status" hidden></p>
     </details>
+    <button type="button" class="install-entry" id="show-install-tip" data-i18n="installEntry" hidden>安装应用</button>
   </footer>
   <dialog class="delete-dialog" id="delete-dialog" aria-labelledby="delete-heading" aria-describedby="delete-description">
     <form method="dialog">
@@ -126,6 +135,7 @@
   <div id="status" class="visually-hidden" role="status"></div>
 </main>
 <script defer src="./task-store.js"></script>
+<script defer src="./install-prompt.js"></script>
 <script defer src="./app.js"></script>
 </body>
 </html>

@@ -10,6 +10,7 @@ const files = new Map([
   ['styles.css', 'text/css; charset=utf-8'],
   ['app.js', 'text/javascript; charset=utf-8'],
   ['task-store.js', 'text/javascript; charset=utf-8'],
+  ['install-prompt.js', 'text/javascript; charset=utf-8'],
   [worker, 'text/javascript; charset=utf-8'],
   ['manifest.webmanifest', 'application/manifest+json; charset=utf-8'],
   ['icons/icon-192.png', 'image/png'],

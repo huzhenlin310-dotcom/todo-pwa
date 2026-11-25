@@ -4,7 +4,7 @@ const prefix = `long-term-goals-todo:${scope.href}:`;
 const cacheName = `${prefix}${CACHE_VERSION}`;
 const shell = scope.href;
 const index = new URL('index.html', scope).pathname;
-const assets = new Set(['./', 'styles.css', 'task-store.js', 'app.js', 'manifest.webmanifest',
+const assets = new Set(['./', 'styles.css', 'task-store.js', 'install-prompt.js', 'app.js', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png']
   .map(path => new URL(path, scope).href));
 
