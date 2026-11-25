@@ -6,7 +6,7 @@ const versioned = path => new URL(`${path}?v=${CACHE_VERSION}`, scope).href;
 const shell = versioned('./');
 const index = new URL('index.html', scope).pathname;
 const assets = new Set([shell, ...['styles.css', 'task-store.js', 'install-prompt.js', 'app-update.js', 'app.js'].map(versioned),
-  ...['manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png']
+  ...['manifest.webmanifest', 'icons/icon-192.png?v=2', 'icons/icon-512.png?v=2', 'icons/apple-touch-icon.png?v=2']
     .map(path => new URL(path, scope).href)]);
 
 self.addEventListener('install', event => {

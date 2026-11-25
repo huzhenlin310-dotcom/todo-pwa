@@ -86,9 +86,14 @@ test('precaches the application at a GitHub Pages-style path and serves it offli
   const manifest = await (await request(`${scope}manifest.webmanifest`, 'same-origin')).json();
   assert.equal(new URL(manifest.start_url, scope).href, scope);
   assert.equal(manifest.display, 'standalone');
-  for (const size of [192, 512]) {
-    const icon = manifest.icons.find(icon => icon.sizes === `${size}x${size}`);
-    const bytes = Buffer.from(await (await request(new URL(icon.src, scope).href, 'same-origin')).arrayBuffer());
+  const [, favicon] = page.match(/<link rel="icon" href="([^"]+)"/);
+  const [, touchIcon] = page.match(/<link rel="apple-touch-icon" href="([^"]+)"/);
+  assert.equal(favicon, manifest.icons.find(icon => icon.sizes === '192x192').src);
+  assert.match(manifest.icons.find(icon => icon.sizes === '512x512').purpose, /\bmaskable\b/);
+  const icons = [...manifest.icons, { src: touchIcon, sizes: '180x180' }];
+  for (const { src, sizes } of icons) {
+    const size = Number(sizes.split('x')[0]);
+    const bytes = Buffer.from(await (await request(new URL(src, scope).href, 'same-origin')).arrayBuffer());
     assert.equal(bytes.readUInt32BE(16), size);
     assert.equal(bytes.readUInt32BE(20), size);
   }

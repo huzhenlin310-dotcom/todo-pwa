@@ -1,5 +1,13 @@
 [
   {
+    "version": "1.1.1",
+    "notes": {
+      "zh-CN": "重新设计了应用图标和浏览器标签页图标。",
+      "ja": "アプリとブラウザータブのアイコンを刷新しました。",
+      "en": "Redesigned the app and browser tab icons."
+    }
+  },
+  {
     "version": "1.1.0",
     "notes": {
       "zh-CN": "新增设置页、版本历史和检查更新。确认更新后重新加载应用，保留本地记录。",
