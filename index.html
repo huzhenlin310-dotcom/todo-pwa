@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f6f3">
+<title>长期目标与日常待办</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<main>
+  <div class="storage-feedback">
+    <p id="storage-notice" class="storage-notice" role="status" tabindex="-1" hidden></p>
+    <button type="button" class="secondary" id="retry-storage" data-i18n="retryStorage" hidden></button>
+  </div>
+  <header class="app-header">
+    <p class="app-title" data-i18n="pageTitle">长期目标与日常待办</p>
+    <nav class="view-nav" data-i18n-label="navigation">
+      <a href="#home" id="home-link" data-i18n="home" aria-current="page">首页</a>
+      <a href="#archive" id="archive-link" data-i18n="archiveHeading">已归档</a>
+    </nav>
+    <div class="language-picker">
+      <label class="visually-hidden" for="language" data-i18n="language">语言</label>
+      <select id="language">
+        <option value="zh-CN" lang="zh-CN">简体中文</option>
+        <option value="ja" lang="ja">日本語</option>
+        <option value="en" lang="en">English</option>
+      </select>
+    </div>
+  </header>
+  <div id="home-view">
+    <section class="goals" aria-labelledby="goals-heading">
+      <header class="section-head"><h1 id="goals-heading" tabindex="-1" data-i18n="goalsHeading">长期目标</h1></header>
+      <div id="goals"></div>
+      <details class="add-goal">
+        <summary><span class="plus" aria-hidden="true">+</span><span data-i18n="addGoal">添加目标</span></summary>
+        <form id="add-goal" class="goal-form"></form>
+      </details>
+    </section>
+    <section class="checklist" aria-labelledby="checklist-heading">
+      <header class="section-head checklist-toolbar">
+        <h2 id="checklist-heading" tabindex="-1" data-i18n="checklistHeading">日常待办</h2>
+        <div class="task-view-switch" role="group" data-i18n-label="taskViews">
+          <button type="button" class="quiet-action" data-task-view="board" aria-controls="board-view" aria-pressed="true" data-i18n="boardHeading">四象限待办</button>
+          <button type="button" class="quiet-action" data-task-view="today" aria-controls="today-view" aria-pressed="false" data-i18n="todayHeading">今日待办</button>
+        </div>
+      </header>
+      <div id="board-view">
+        <form id="add-task" class="add-row">
+          <label class="visually-hidden" for="task-title" data-i18n="taskPrompt">要做什么？</label>
+          <input id="task-title" name="title" maxlength="160" data-i18n-placeholder="taskPrompt" placeholder="要做什么？" required>
+          <button type="submit" data-i18n="add">添加</button>
+        </form>
+        <div id="checklist-tasks"></div>
+      </div>
+      <div id="today-view" hidden>
+        <header class="section-head today-heading">
+          <h3 id="today-heading" data-i18n="todayHeading">今日待办</h3>
+          <span class="today-progress" id="today-progress" role="status"></span>
+        </header>
+        <ul id="today-tasks" aria-labelledby="today-heading"></ul>
+        <div class="empty-today" id="no-today-tasks" hidden>
+          <p class="archive-empty" data-i18n="emptyToday"></p>
+          <button type="button" class="secondary" id="pick-today-tasks" aria-controls="board-view" data-i18n="pickTodayTasks"></button>
+        </div>
+        <section id="past-view" aria-labelledby="past-heading" hidden>
+          <h3 class="past-heading" id="past-heading" data-i18n="pastHeading">往期待办</h3>
+          <p class="archive-empty" data-i18n="swipeHint"></p>
+          <ul id="past-tasks" aria-labelledby="past-heading"></ul>
+        </section>
+      </div>
+    </section>
+  </div>
+  <div id="archive-view" hidden>
+    <h1 class="archive-heading" id="archive-heading" tabindex="-1" data-i18n="archiveHeading">已归档</h1>
+    <section class="goals archive-section" aria-labelledby="archived-goals-heading">
+      <h2 id="archived-goals-heading" tabindex="-1" data-i18n="goalsHeading">长期目标</h2>
+      <div id="archived-goals"></div>
+      <p class="archive-empty" id="no-archived-goals" data-i18n="emptyArchiveGoals"></p>
+    </section>
+    <section class="archive-section" aria-labelledby="archived-tasks-heading">
+      <h2 id="archived-tasks-heading" tabindex="-1" data-i18n="checklistHeading">日常待办</h2>
+      <ul id="archived-tasks" aria-labelledby="archived-tasks-heading"></ul>
+      <p class="archive-empty" id="no-archived-tasks" data-i18n="emptyArchiveTasks"></p>
+    </section>
+  </div>
+  <footer class="data-settings">
+    <details>
+      <summary data-i18n="dataSettings">数据备份</summary>
+      <p data-i18n="localData">待办保存在此浏览器。换设备或清除站点数据前，请先导出备份。</p>
+      <div class="task-actions">
+        <button type="button" class="secondary" id="export-backup" data-i18n="exportBackup">导出备份</button>
+        <button type="button" class="secondary" id="import-backup" data-i18n="importBackup">导入备份</button>
+        <input type="file" id="backup-file" accept=".json,application/json" hidden>
+      </div>
+      <p id="backup-notice" class="backup-notice" role="status" hidden></p>
+    </details>
+  </footer>
+  <dialog class="delete-dialog" id="delete-dialog" aria-labelledby="delete-heading" aria-describedby="delete-description">
+    <form method="dialog">
+      <h2 id="delete-heading" data-i18n="deleteHeading"></h2>
+      <p id="delete-description"></p>
+      <div class="task-actions">
+        <button type="submit" value="cancel" class="secondary" data-i18n="cancel" autofocus></button>
+        <button type="submit" value="delete" class="confirm-delete" data-i18n="delete"></button>
+      </div>
+    </form>
+  </dialog>
+  <dialog class="delete-dialog" id="import-dialog" aria-labelledby="import-heading" aria-describedby="import-description">
+    <form method="dialog">
+      <h2 id="import-heading" data-i18n="importHeading">导入备份？</h2>
+      <p id="import-description" data-i18n="importDescription">导入会替换当前浏览器里的目标、待办和应用设置。</p>
+      <div class="task-actions">
+        <button type="submit" value="cancel" class="secondary" data-i18n="cancel" autofocus></button>
+        <button type="submit" value="import" data-i18n="replaceData">替换数据</button>
+      </div>
+    </form>
+  </dialog>
+  <div class="undo-notice" id="undo-notice" hidden>
+    <span id="undo-message"></span>
+    <button type="button" class="secondary" id="undo-action" data-i18n="undo"></button>
+  </div>
+  <div id="status" class="visually-hidden" role="status"></div>
+</main>
+<script defer src="./task-store.js"></script>
+<script defer src="./app.js"></script>
+</body>
+</html>

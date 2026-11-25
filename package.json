@@ -1,0 +1,10 @@
+{
+  "name": "long-term-goals-and-tasks",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node scripts/site.mjs serve",
+    "build": "node scripts/site.mjs build",
+    "test": "node --test"
+  }
+}
