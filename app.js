@@ -16,6 +16,7 @@
   const undoMessage = document.querySelector('#undo-message');
   const swipeThreshold = 64;
   const addGoalForm = document.querySelector('#add-goal');
+  const addGoalToggle = document.querySelector('#toggle-add-goal');
   const addTaskForm = document.querySelector('#add-task');
   const languagePicker = document.querySelector('#language');
   const status = document.querySelector('#status');
@@ -573,7 +574,7 @@
   }
 
   function quadrantGroup(key) {
-    return `<details class="quadrant${key === 'unclassified' ? ' unclassified-group' : ''}" data-quadrant="${key}">
+    return `<details class="quadrant" data-quadrant="${key}">
       <summary><span data-i18n="${quadrants[key]}"></span><span class="quadrant-count"></span><span class="arrow" aria-hidden="true"></span></summary>
       <ul></ul>
     </details>`;
@@ -1119,6 +1120,13 @@
     else if (!archiveView.hidden && deletion.returnFocus.isConnected) deletion.returnFocus.focus({ preventScroll: true });
   });
 
+  addGoalToggle.addEventListener('click', () => {
+    const open = addGoalForm.hidden;
+    addGoalForm.hidden = !open;
+    addGoalToggle.setAttribute('aria-expanded', String(open));
+    if (open) addGoalForm.elements.title.focus();
+  });
+
   addGoalForm.addEventListener('submit', event => {
     event.preventDefault();
     const goal = saveGoalFields(addGoalForm);
@@ -1127,7 +1135,8 @@
     saveState();
     const card = appendGoal(goal);
     addGoalForm.reset();
-    addGoalForm.closest('details').open = false;
+    addGoalForm.hidden = true;
+    addGoalToggle.setAttribute('aria-expanded', 'false');
     card.open = true;
     card.querySelector('.add-step input').focus();
   });

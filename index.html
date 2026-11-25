@@ -41,12 +41,14 @@
   </aside>
   <div id="home-view">
     <section class="goals" aria-labelledby="goals-heading">
-      <header class="section-head"><h1 id="goals-heading" tabindex="-1" data-i18n="goalsHeading">长期目标</h1></header>
+      <header class="section-head">
+        <h1 id="goals-heading" tabindex="-1" data-i18n="goalsHeading">长期目标</h1>
+        <button type="button" id="toggle-add-goal" aria-controls="add-goal" aria-expanded="false">
+          <span class="plus" aria-hidden="true">+</span><span data-i18n="addGoal">添加目标</span>
+        </button>
+      </header>
+      <form id="add-goal" class="goal-form" hidden></form>
       <div id="goals"></div>
-      <details class="add-goal">
-        <summary><span class="plus" aria-hidden="true">+</span><span data-i18n="addGoal">添加目标</span></summary>
-        <form id="add-goal" class="goal-form"></form>
-      </details>
     </section>
     <section class="checklist" aria-labelledby="checklist-heading">
       <header class="section-head checklist-toolbar">
@@ -97,7 +99,7 @@
   </div>
   <footer class="data-settings">
     <details>
-      <summary data-i18n="dataSettings">数据备份</summary>
+      <summary><span class="arrow" aria-hidden="true"></span><span data-i18n="dataSettings">数据备份</span></summary>
       <p data-i18n="localData">待办保存在此浏览器。换设备或清除站点数据前，请先导出备份。</p>
       <div class="task-actions">
         <button type="button" class="secondary" id="export-backup" data-i18n="exportBackup">导出备份</button>
